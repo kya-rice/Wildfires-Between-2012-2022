@@ -1,1 +1,1 @@
-# Wildfires-Between-2012---2022
+# Wildfires Between 2012 - 2022
