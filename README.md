@@ -15,7 +15,9 @@
 ### However, we've also introduced some concepts not related to the content of this course, such as a year selecting function where the user can select certain years that they want to see and the map and associated data will change with whichever year they select. We also utilized some python code that helps with data cleaning where we create a new geojson file that has each county's individual informaton such as the points where each wildfire was located at and each county's total acres burned. This format is much easier for our purpose since we want to map the data on the county level, and having each county be its own feature with its own associated data is much easier to use. 
 
 ## Data Sources
-### For our wildfire data, we 
+### For our wildfire data, we used a dataset from the Washington State Department of Natural Resources Open Data that contains wildfire statistics from 2008 - present. We edited this geojson file to only include data from the past 10 complete years, 2012 - 2022. For the county boundaries we pulled a geojson file from the Washington Geospatial Open Data Portal that just contains the county boundaries for each county in Washington state, along with the county names. The rest of the datasets we used in this project we created in order to filter the data down to specific years and focusing on specific attributes for each county.
+
+
 ## Wildfire data set we could use 
 https://data-wadnr.opendata.arcgis.com/datasets/wadnr::dnr-fire-statistics-2008-present/explore?location=47.249274%2C-120.769400%2C7.97
 - Properties of dataset:
