@@ -1,10 +1,12 @@
 # Visualizing Wildfires Between 2012 - 2022
 
-## This interactive dashboard uses wildfire data for the state of Washington by county and contains a choropleth map where each county is classified and shaded by the number of wildfires that were within that county. If the user clicks on one of the counties it will bring up the total acres burned within that county, as well as the 3 most common fire causes and their counts. The user is also able to filter which years they want to look at from 2012 to 2022, and there's also an option to include all data within that 10-year period. This process is done by aggregating individual wildfire data for each county in order to display these statistics on the county-wide level. 
+## This interactive dashboard uses wildfire data for the state of Washington by county and contains a choropleth map where each county is classified and shaded by the number of wildfires that were within that county. If the user clicks on one of the counties it will bring up the total acres burned within that county to further express the levels of severity of wildfires in each county using a more cumulative statistic. The user is also able to filter which years they want to look at from 2012 to 2022, and there's also an option to include all data within that 10-year period. This process is done by aggregating individual wildfire data for each county in order to display these statistics on the county-wide level. 
 
 ### There is a large amount of wildfire maps and interactive dashboards out there, so we wanted to create our own using the front end programming skills that we've learned in this class. Through our map-based dashboard we hope to provide an effective and interactive visualization for educational purposes, where we draw inspiration from different aspects from many other wildfire maps and interactive visualizations. The summary statistics we chose to display for each county provide a summary to the user of the severity of the wildfires within that county, that way the user has some numerical figures to accompany the choropleth classification that county was placed into. The year-choosing function is an important part of the interactive aspect of this dashboard so that users can compare how the statistics compare for each county throughout the years, being able to see how much the distribution of wildfires has shifted throughout the years, if any at all.
 
 ### Application URL:
+
+### Screenshots: (Basemap, hovering over county, clicking on county to bring up summary statistics)
 
 
 ## Wildfire data set we could use 
