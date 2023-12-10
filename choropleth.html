@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -7,8 +7,10 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        h2, h3 {
+        h2,
+        h3 {
             margin: 10px;
             font-size: 18px;
         }
@@ -21,11 +23,6 @@
             margin: 10px;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
         #map {
             position: absolute;
             top: 0;
@@ -33,7 +30,6 @@
             left: 0;
             right: 0;
             width: 100%;
-            z-index: 1;
         }
 
         .map-overlay {
@@ -48,70 +44,45 @@
             font-family: Arial, sans-serif;
             overflow: auto;
             border-radius: 3px;
-            z-index: 2;
         }
 
         #features {
             top: 0;
-            height: 150px;
+            height: 250px;
             margin-top: 20px;
             width: 250px;
         }
 
         #legend {
+            position: absolute;
+            top: 400px; 
+            left: 20px; 
             padding: 10px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            line-height: 18px;
-            height: 210px;
-            margin-bottom: 40px;
+            line-height: 15px;
+            height: auto;
             width: 150px;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            z-index: 1; 
         }
 
-        .side-panel {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.8);
-            border-style: solid;
-            border-width: 1px;
-            border-color: rgba(0, 0, 0, 0.2);
-            font-family: Arial, sans-serif;
-            overflow-y: scroll;
-            border-radius: 3px;
-            max-height: 100vh;
-            width: 300px; /* Adjust the width as needed */
-            z-index: 3;
+
+        .legend-key {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
         }
 
-        button {
-            margin-bottom: 10px;
+        .legend-key span {
+            width: 10px;
+            height: 10px;
+            margin-right: 5px;
         }
 
-        table {
-            border-collapse: collapse;
-            border-spacing: 0;
-            width: 100%;
-            border: 1px solid #ddd;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 16px;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        @media (max-width: 1024px) {
-            .side-panel {
-                display: none;
-            }
-
-            #map {
-                flex-grow: 1;
-            }
+        .legend-text {
+            font-size: 14px;
         }
 
         .mapboxgl-canvas-container.mapboxgl-interactive,
@@ -128,70 +99,85 @@
         <div id='text-description'>
             <p>Hover over a county!</p>
         </div>
-        <div class='map-overlay' id='legend'></div>
+        <!-- Add a div for displaying aggregated information -->
+        <div id='aggregated-info'>
+            <h3>Aggregated Information</h3>
+            <p>Click on a county to view details</p>
+        </div>
     </div>
-    <div class="side-panel">
-        <h2>Wildfire List</h2>
-        <button id="sortButton">Sort by Acres Burned</button>
-        <table id="wildfireTable">
-            <tr>
-                <th>County</th>
-                <th>Acres Burned</th>
-                <th>Top Three Reasons</th>
-            </tr>
-        </table>
-    </div>
-
+    <div id='legend'>
+        <!-- Initial content for the legend -->
+        <b>Acres Burned</b><br><br>
+        <div class='legend-key'>
+            <span style='background-color: #FFEDA0;'></span>
+            <span class='legend-text'>0-499</span>
+        </div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
         const map = new mapboxgl.Map({
-            container: 'map', // container ID
-            style: 'mapbox://styles/mapbox/dark-v10', // style URL
-            zoom: 6.5, // starting zoom
-            center: [-121, 47.5] // starting center
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v12',
+            zoom: 6.5,
+            center: [-121, 47.5]
         });
 
         async function geojsonFetch() {
-            let response, countyBoundaries, wildfireData;
+            let response, countyBoundaries, choroplethData;
             response = await fetch('assets/WA_County_Boundaries.geojson');
             countyBoundaries = await response.json();
             response = await fetch('assets/with_stats_bycounty.geojson');
-            wildfireData = await response.json();
+            choroplethData = await response.json();
+
 
             map.on('load', function loadingData() {
-
-                map.addSource('wildfireData', {
+                map.addSource('countyBoundaries', {
                     type: 'geojson',
-                    data: wildfireData
+                    data: countyBoundaries
                 });
 
                 map.addLayer({
-                    'id': 'wildfireData-layer',
+                    'id': 'countyBoundaries-layer',
                     'type': 'fill',
-                    'source': 'wildfireData',
+                    'source': 'countyBoundaries',
+                    'paint': {
+                        'fill-outline-color': '#BBBBBB',
+                        'fill-opacity': 0.7,
+                    }
+                });
+
+                map.addSource('choroplethData', {
+                    type: 'geojson',
+                    data: choroplethData
+                });
+
+                map.addLayer({
+                    'id': 'choropleth-layer',
+                    'type': 'fill',
+                    'source': 'choroplethData',
                     'paint': {
                         'fill-color': [
                             'step',
                             ['get', 'ACRES_BURNED'],
-                            '#FFEDA0',   // stop_output_0
-                            500,          // stop_input_0
-                            '#FED976',   // stop_output_1
-                            1000,          // stop_input_1
-                            '#FEB24C',   // stop_output_2
-                            2000,          // stop_input_2
-                            '#FD8D3C',   // stop_output_3
-                            10000,         // stop_input_3
-                            '#FC4E2A',   // stop_output_4
-                            50000,         // stop_input_4
-                            '#E31A1C',   // stop_output_5
-                            150000,         // stop_input_5
-                            '#BD0026',   // stop_output_6
-                            1400000,        // stop_input_6
-                            "#800026"    // stop_output_7
+                            '#FFEDA0',
+                            500,
+                            '#FED976',
+                            1000,
+                            '#FEB24C',
+                            2000,
+                            '#FD8D3C',
+                            10000,
+                            '#FC4E2A',
+                            50000,
+                            '#E31A1C',
+                            150000,
+                            '#BD0026',
+                            1400000,
+                            "#800026"
                         ],
                         'fill-outline-color': '#BBBBBB',
                         'fill-opacity': 0.7,
-                    }
+                    },
+                    'interactive': true // Enable click events
                 });
 
                 const layers = [
@@ -222,85 +208,38 @@
                     const item = document.createElement('div');
                     const key = document.createElement('span');
                     key.className = 'legend-key';
-                    key.style.backgroundColor = color;
-
+                    key.innerHTML = `<span style="background-color: ${color};"></span>`;
                     const value = document.createElement('span');
+                    value.className = 'legend-text';
                     value.innerHTML = `${layer}`;
                     item.appendChild(key);
                     item.appendChild(value);
                     legend.appendChild(item);
                 });
 
-                // Attach the populateTable function to the "Sort by Acres Burned" button click event
-                let sortButton = document.getElementById("sortButton");
-                sortButton.addEventListener('click', function () {
-                    populateTable(wildfireData);
-                    sortTable();
+                map.on('mousemove', ({ point }) => {
+                    const features = map.queryRenderedFeatures(point, {
+                        layers: ['choropleth-layer']
+                    });
+
+                    if (features.length) {
+                        const county = features[0].properties.COUNTY_LABEL_NM;
+                        document.getElementById('text-description').innerHTML = `<h3>${county}</h3>`;
+                    } else {
+                        document.getElementById('text-description').innerHTML = `<p>Hover over a county!</p>`;
+                    }
                 });
 
-                // Initial population of the table
-                populateTable(wildfireData);
-            });
-        }
 
-        function populateTable(data) {
-            let table = document.getElementById("wildfireTable");
-            // Clear existing rows from the table
-            table.innerHTML = "";
-
-            // Add header row
-            let headerRow = table.insertRow(0);
-            let headers = ["County", "Acres Burned", "Top Three Reasons"];
-            for (let i = 0; i < headers.length; i++) {
-                let headerCell = headerRow.insertCell(i);
-                headerCell.innerHTML = headers[i];
-            }
-
-            // Add data rows
-            for (let i = 0; i < data.features.length; i++) {
-                let row = table.insertRow(i + 1);
-                let properties = data.features[i].properties;
-
-                // Assuming the structure of your GeoJSON properties
-                let County = properties.COUNTY_LABEL_NM || "N/A";
-                let Acres_Burned = properties.ACRES_BURNED || 0;
-                let Top_Three_Reasons = properties.FIRESCAUSE_LABEL_NM || "N/A";
-
-                let cell1 = row.insertCell(0);
-                let cell2 = row.insertCell(1);
-                let cell3 = row.insertCell(2);
-
-                cell1.innerHTML = County;
-                cell2.innerHTML = Acres_Burned.toLocaleString();
-                cell3.innerHTML = Top_Three_Reasons;
-            }
-        }
-
-        function sortTable() {
-            let table, rows, i;
-            table = document.getElementById("wildfireTable");
-            rows = Array.from(table.rows).slice(1); // Exclude the header row
-
-            rows.sort(function (a, b) {
-                let acresA = parseFloat(a.cells[1].innerHTML.replace(/,/g, '')) || 0;
-                let acresB = parseFloat(b.cells[1].innerHTML.replace(/,/g, '')) || 0;
-                return acresA - acresB;
-            });
-
-            // Clear the existing table rows
-            table.innerHTML = "";
-
-            // Add header row
-            let headerRow = table.insertRow(0);
-            let headers = ["County", "Acres Burned", "Top Three Reasons"];
-            for (let i = 0; i < headers.length; i++) {
-                let headerCell = headerRow.insertCell(i);
-                headerCell.innerHTML = headers[i];
-            }
-
-            // Add sorted data rows
-            rows.forEach(function (row) {
-                table.appendChild(row);
+                // Display aggregated information on click
+                map.on('click', 'choropleth-layer', function (e) {
+                    const properties = e.features[0].properties;
+                    document.getElementById('aggregated-info').innerHTML = `
+                        <h3>${properties.COUNTY_LABEL_NM}</h3>
+                        <p>Total Acres Burned: ${properties.ACRES_BURNED.toFixed(2)}</p>
+                        <p>Fire Cause: ${properties.FIRESCAUSE_LABEL_NM}</p>
+                    `;
+                });
             });
         }
 
