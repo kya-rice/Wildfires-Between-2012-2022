@@ -10,7 +10,8 @@
 
 ## Screenshots: (Basemap, hovering over county, clicking on county to bring up summary statistics)
 
-
+## Main Functions
+### The main functions used for this project are ones that we've learned in this class, primarily for initializing a basemap using MapBox access tokens, using a mouse hover function that will display the county name the user is hovering over along with its total wildfire count, and a mouse click function that will display the total acres burned for whichever county gets clicked on. 
 ## Wildfire data set we could use 
 https://data-wadnr.opendata.arcgis.com/datasets/wadnr::dnr-fire-statistics-2008-present/explore?location=47.249274%2C-120.769400%2C7.97
 - Properties of dataset:
