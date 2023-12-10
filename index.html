@@ -30,11 +30,13 @@
             left: 0;
             right: 0;
             width: 100%;
-            cursor: pointer; /* Set cursor to pointer by default */
+            /* Set cursor to pointer by default */
+            cursor: pointer;
         }
 
         #map:hover {
-            cursor: pointer; /* Change cursor to pointer on hover */
+            /* Change cursor to pointer on hover */
+            cursor: pointer;
         }
 
         .map-overlay {
@@ -53,24 +55,18 @@
 
         #features {
             top: 0;
-            height: 250px;
+            height: 300px;
             margin-top: 20px;
             width: 250px;
         }
 
         #legend {
-            position: absolute;
-            top: 400px; 
-            left: 20px; 
             padding: 10px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             line-height: 18px;
-            height: auto;
-            width: 150px;
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            z-index: 1; 
+            height: 180px;
+            margin-bottom: 40px;
+            width: 180px;
         }
 
 
@@ -85,6 +81,11 @@
         .mapboxgl-canvas-container.mapboxgl-interactive,
         .mapboxgl-ctrl-group button.mapboxgl-ctrl-compass {
             cursor: unset;
+        }
+
+        th {
+            text-align: left;
+            padding-left: 10px;
         }
     </style>
 </head>
@@ -102,7 +103,7 @@
             <p>Click on a county to view details</p>
         </div>
     </div>
-    <div id='legend'></div>
+    <div class='map-overlay' id='legend'></div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
         const map = new mapboxgl.Map({
@@ -182,7 +183,7 @@
                         'fill-outline-color': [
                             'case',
                             ['boolean', ['feature-state', 'hover'], false],
-                            'black', // Change this color to your preferred hover outline color
+                            'black',
                             '#BBBBBB'
                         ],
                         'fill-opacity': 0.7,
