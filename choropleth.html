@@ -30,6 +30,11 @@
             left: 0;
             right: 0;
             width: 100%;
+            cursor: pointer; /* Set cursor to pointer by default */
+        }
+
+        #map:hover {
+            cursor: pointer; /* Change cursor to pointer on hover */
         }
 
         .map-overlay {
@@ -54,35 +59,20 @@
         }
 
         #legend {
-            position: absolute;
-            top: 400px; 
-            left: 20px; 
             padding: 10px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            line-height: 15px;
-            height: auto;
+            line-height: 18px;
+            height: 170px;
+            margin-bottom: 40px;
             width: 150px;
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            z-index: 1; 
         }
-
 
         .legend-key {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .legend-key span {
+            display: inline-block;
+            border-radius: 20%;
             width: 10px;
             height: 10px;
             margin-right: 5px;
-        }
-
-        .legend-text {
-            font-size: 14px;
         }
 
         .mapboxgl-canvas-container.mapboxgl-interactive,
@@ -105,13 +95,7 @@
             <p>Click on a county to view details</p>
         </div>
     </div>
-    <div id='legend'>
-        <!-- Initial content for the legend -->
-        <b>Acres Burned</b><br><br>
-        <div class='legend-key'>
-            <span style='background-color: #FFEDA0;'></span>
-            <span class='legend-text'>0-499</span>
-        </div>
+    <div id='legend'></div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
         const map = new mapboxgl.Map({
@@ -121,15 +105,24 @@
             center: [-121, 47.5]
         });
 
+        // Define a global variable to store precomputed aggregated data
+        let aggregatedData = {};
+
         async function geojsonFetch() {
-            let response, countyBoundaries, choroplethData;
+            let response, countyBoundaries, choroplethData, wildfireData;
             response = await fetch('assets/WA_County_Boundaries.geojson');
             countyBoundaries = await response.json();
             response = await fetch('assets/with_stats_bycounty.geojson');
             choroplethData = await response.json();
-
+            response = await fetch('assets/DNR_Fire_Statistics_2008_-_Present.geojson')
+            wildfireData = await response.json();
 
             map.on('load', function loadingData() {
+                map.loadImage('assets/fire.png', function (error, image) {
+                    if (error) throw error;
+                    map.addImage('fire', image);
+                });
+
                 map.addSource('countyBoundaries', {
                     type: 'geojson',
                     data: countyBoundaries
@@ -156,25 +149,35 @@
                     'source': 'choroplethData',
                     'paint': {
                         'fill-color': [
-                            'step',
-                            ['get', 'ACRES_BURNED'],
-                            '#FFEDA0',
-                            500,
-                            '#FED976',
-                            1000,
-                            '#FEB24C',
-                            2000,
-                            '#FD8D3C',
-                            10000,
-                            '#FC4E2A',
-                            50000,
-                            '#E31A1C',
-                            150000,
-                            '#BD0026',
-                            1400000,
-                            "#800026"
+                            'case',
+                            ['boolean', ['feature-state', 'hover'], false],
+                            'yellow', // Change this color to your preferred hover color
+                            [
+                                'step',
+                                ['get', 'ACRES_BURNED'],
+                                '#FFEDA0',
+                                500,
+                                '#FED976',
+                                1000,
+                                '#FEB24C',
+                                2000,
+                                '#FD8D3C',
+                                10000,
+                                '#FC4E2A',
+                                50000,
+                                '#E31A1C',
+                                150000,
+                                '#BD0026',
+                                1400000,
+                                "#800026"
+                            ]
                         ],
-                        'fill-outline-color': '#BBBBBB',
+                        'fill-outline-color': [
+                            'case',
+                            ['boolean', ['feature-state', 'hover'], false],
+                            'black', // Change this color to your preferred hover outline color
+                            '#BBBBBB'
+                        ],
                         'fill-opacity': 0.7,
                     },
                     'interactive': true // Enable click events
@@ -208,9 +211,9 @@
                     const item = document.createElement('div');
                     const key = document.createElement('span');
                     key.className = 'legend-key';
-                    key.innerHTML = `<span style="background-color: ${color};"></span>`;
+                    key.style.backgroundColor = color;
+
                     const value = document.createElement('span');
-                    value.className = 'legend-text';
                     value.innerHTML = `${layer}`;
                     item.appendChild(key);
                     item.appendChild(value);
@@ -230,17 +233,75 @@
                     }
                 });
 
+                // Precompute aggregated data
+                aggregatedData = computeAggregatedData(wildfireData.features);
 
                 // Display aggregated information on click
                 map.on('click', 'choropleth-layer', function (e) {
-                    const properties = e.features[0].properties;
-                    document.getElementById('aggregated-info').innerHTML = `
-                        <h3>${properties.COUNTY_LABEL_NM}</h3>
-                        <p>Total Acres Burned: ${properties.ACRES_BURNED.toFixed(2)}</p>
-                        <p>Fire Cause: ${properties.FIRESCAUSE_LABEL_NM}</p>
-                    `;
+                    const countyName = e.features[0].properties.COUNTY_LABEL_NM;
+                    const properties = aggregatedData[countyName];
+
+                    if (properties) {
+                        const tableContent = `
+                            <table>
+                                <tr>
+                                    <th>Number of Incidents</th>
+                                    <td>${properties.incidents}</td>
+                                </tr>
+                                <tr>
+                                    <th>Total Acres Burned</th>
+                                    <td>${properties.acresBurned.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <th>Top Three Reasons</th>
+                                    <td>${properties.topThreeReasons.join(', ')}</td>
+                                </tr>
+                            </table>
+                        `;
+                        document.getElementById('aggregated-info').innerHTML = tableContent;
+                    } else {
+                        document.getElementById('aggregated-info').innerHTML = `<p>No data available for ${countyName}</p>`;
+                    }
                 });
             });
+        }
+
+        // Function to precompute aggregated data
+        function computeAggregatedData(wildfireFeatures) {
+            const aggregatedData = {};
+
+            wildfireFeatures.forEach(fire => {
+                const countyName = fire.properties.COUNTY_LABEL_NM;
+
+                // Initialize if not present
+                if (!aggregatedData[countyName]) {
+                    aggregatedData[countyName] = {
+                        incidents: 0,
+                        acresBurned: 0,
+                        fireCauses: {}
+                    };
+                }
+
+                // Update aggregated data
+                aggregatedData[countyName].incidents += 1;
+                aggregatedData[countyName].acresBurned += fire.properties.ACRES_BURNED;
+
+                const cause = fire.properties.FIRESCAUSE_LABEL_NM;
+                if (cause) {
+                    aggregatedData[countyName].fireCauses[cause] = (aggregatedData[countyName].fireCauses[cause] || 0) + 1;
+                }
+            });
+
+            // Sort causes by occurrence in descending order and extract top three causes
+            for (const countyName in aggregatedData) {
+                const data = aggregatedData[countyName];
+                data.topThreeReasons = Object.entries(data.fireCauses)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3)
+                    .map(cause => cause[0]);
+            }
+
+            return aggregatedData;
         }
 
         geojsonFetch();
