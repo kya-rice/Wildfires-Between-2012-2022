@@ -4,6 +4,8 @@
 
 There is a large amount of wildfire maps and interactive dashboards out there, so we wanted to create our own using the front end programming skills that we've learned in this class. Through our map-based dashboard we hope to provide an effective and interactive visualization for educational purposes, where we draw inspiration from different aspects from many other wildfire maps and interactive visualizations. The summary statistics we chose to display for each county provide a summary to the user of the severity of the wildfires within that county, that way the user has some numerical figures to accompany the choropleth classification that county was placed into. The year-choosing function is an important part of the interactive aspect of this dashboard so that users can compare how the statistics compare for each county throughout the years, being able to see how much the distribution of wildfires has shifted throughout the years, if any at all.
 
+### Application URL:
+
 
 ## Wildfire data set we could use 
 https://data-wadnr.opendata.arcgis.com/datasets/wadnr::dnr-fire-statistics-2008-present/explore?location=47.249274%2C-120.769400%2C7.97
