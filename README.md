@@ -11,7 +11,10 @@
 ## Screenshots: (Basemap, hovering over county, clicking on county to bring up summary statistics)
 
 ## Main Functions
-### The main functions used for this project are ones that we've learned in this class, primarily for initializing a basemap using MapBox access tokens, using a mouse hover function that will display the county name the user is hovering over along with its total wildfire count, and a mouse click function that will display the total acres burned for whichever county gets clicked on. 
+### The main functions used for this project are mostly ones that we've learned in this class, primarily for initializing a basemap using MapBox access tokens, using a mouse hover function that will display the county name the user is hovering over along with its total wildfire count, and a mouse click function that will display the total acres burned for whichever county gets clicked on.
+### However, we've also introduced some concepts not related to the content of this course, such as a year selecting function where the user can select certain years that they want to see and the map and associated data will change with whichever year they select. We also utilized some python code that helps with data cleaning where we create a new geojson file that has each county's individual informaton such as the points where each wildfire was located at and each county's total acres burned. This format is much easier for our purpose since we want to map the data on the county level, and having each county be its own feature with its own associated data is much easier to use.
+
+
 ## Wildfire data set we could use 
 https://data-wadnr.opendata.arcgis.com/datasets/wadnr::dnr-fire-statistics-2008-present/explore?location=47.249274%2C-120.769400%2C7.97
 - Properties of dataset:
