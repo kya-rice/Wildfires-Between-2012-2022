@@ -41,4 +41,4 @@ https://geo.wa.gov/datasets/12712f465fc44fb58328c6e0255ca27e/explore
   - Hovering over a dataset will just display the name of the county, similar to what we did in lab 4.
   - Clicking on a county will show the total acres burned and the top 3 most common fire causes and their numbers.
   - Bar that has a feature with buttons where you can select years between 2012-2022
-    - I have code on how to do this
+ 
