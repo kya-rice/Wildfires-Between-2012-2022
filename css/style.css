@@ -1,9 +1,9 @@
 .dropdown {
     font-size: 20px;
-    margin-top: 65px;
+    margin-top: 20px;
     margin-bottom: 10px;
     position: relative;
-    z-index: 3000;
+    z-index: 5;
     margin-right: 40px;
     margin: auto;
     text-align: center;
