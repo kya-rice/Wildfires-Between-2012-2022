@@ -25,7 +25,7 @@
 #### Professor Bo Zhao for instructing this course and facilitating the learning of the concepts that were used in this project and providing material on these concepts.
 #### Our TA, Liz Peng for reviewing and giving feedback on the lab assignments where we learned the core concepts of this course and being available to answer coding-related questions.
 
-## Wildfire data set we could use 
+## Wildfire Data Used
 https://data-wadnr.opendata.arcgis.com/datasets/wadnr::dnr-fire-statistics-2008-present/explore?location=47.249274%2C-120.769400%2C7.97
 - Properties of dataset:
   - Acres burned
