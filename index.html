@@ -6,6 +6,7 @@
     <title>Wildfires Between 2012 - 2022 in Washington State</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
+    <link rel="dropdown_stylesheet" href="style.css">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
@@ -32,6 +33,12 @@
             width: 100%;
             /* Set cursor to pointer by default */
             cursor: pointer;
+        }
+        #year {
+            position: fixed;
+            top: 40px; /* Adjust the top position as needed */
+            right: 40px; /* Adjust the right position as needed */
+            z-index: 1000; /* Optional: Adjust the z-index to control stacking order */
         }
 
         #map:hover {
@@ -91,6 +98,9 @@
 </head>
 
 <body>
+    <label for="year">Select a Year:</label>
+    <select id="year" onchange="getData()"> </select>
+    <div id="year-dropdown"></div>
     <div id="map"></div>
     <div class='map-overlay' id='features'>
         <h2>Wildfires Between 2012 - 2022 in Washington State</h2>
@@ -313,6 +323,45 @@
         }
 
         geojsonFetch();
+
+        // year dropdown function
+        const wildfireData = {
+            "DSCVR_DT": "Year 2012",
+            "DSCVR_DT": "Year 2013",
+            "DSCVR_DT": "Year 2014",
+            "DSCVR_DT": "Year 2015",
+            "DSCVR_DT": "Year 2016",
+            "DSCVR_DT": "Year 2017",
+            "DSCVR_DT": "Year 2018",
+            "DSCVR_DT": "Year 2019",
+            "DSCVR_DT": "Year 2020",
+            "DSCVR_DT": "Year 2021",
+            "DSCVR_DT": "Year 2022",
+        };
+
+        const yearDropdown = document.getElementById("year");
+
+        for (let year = 2012; year <= 2022; year++) {
+            const option = document.createElement("option");
+            option.value = year;
+            option.text = year;
+            yearDropdown.add(option);
+        }
+
+        function getData() {
+            const selectedYear = yearDropdown.value;
+            const dataContainer = document.getElementById("year-dropdown");
+            const datasetYear = new Date(wildfireData["DSCVR_DT"]).getFullYear();
+
+            if (wildfireData[selectedYear]) {
+                dataContainer.textContent = wildfireData[selectedYear];
+            } else {
+                dataContainer.textContent = "No data available for the selected year.";
+            }
+        }
+
+        getData();
+
     </script>
 </body>
 
