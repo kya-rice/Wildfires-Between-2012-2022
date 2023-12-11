@@ -19,11 +19,7 @@ body{
     margin-top: 80px;
 }
 
-.navbar{
-    background: #52c41d;
-    height: 80px;
-    z-index: 10;
-}
+
 
 label.logo{
     color: white;
@@ -32,22 +28,7 @@ label.logo{
     padding: 0 100px;
     font-weight: bold;
 }
-nav ul{
-    float: right;
-    margin-right: 20px;
-}
-nav ul li{
-    display: inline-block;
-    line-height: 80px;
-    margin: 0 5px;
-}
-nav ul li a{
-    color: white;
-    font-size: 17px;
-    padding: 7px 13px;
-    text-transform: uppercase;
-    border-radius: 3px;
-}
+
 a.active, a:hover{
     background: #106f07;
     transition: .5s;
@@ -69,11 +50,6 @@ a.active, a:hover{
         font-size: 30px;
         padding-left: 50px;
     }
-    .navbar{
-        background: #52c41d;
-        height: 80px;
-        z-index: 10;
-    }
     nav ul li {
         font-size: 16px;
     }
@@ -91,20 +67,6 @@ a.active, a:hover{
         left: -100%;
         text-align: center;
         transition: all .5s;
-    }
-    .navbar{
-        background: #52c41d;
-        height: 80px;
-        z-index: 10;
-    }
-    nav ul li{
-        display: block;
-        margin: 50px 0;
-        line-height: 30px;
-    }
-    nav ul li a{
-        font-size: 20px;
-        color: #000000;
     }
     a:hover,a.active{
         background: #106f07;
