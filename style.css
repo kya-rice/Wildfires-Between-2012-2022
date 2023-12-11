@@ -1,11 +1,10 @@
-.year-dropdown {
-    position: fixed;
-    top: 20px; /* Adjust the top position as needed */
-    right: 20px; /* Adjust the right position as needed */
-    z-index: 1000; /* Optional: Adjust the z-index to control stacking order */
-  }
-  
-  #year {
-    padding: 5px;
-    font-size: 14px;
-  }
+.dropdown {
+    font-size: 20px;
+    margin-top: 65px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 3000;
+    margin-right: 40px;
+    margin: auto;
+    text-align: center;
+}
