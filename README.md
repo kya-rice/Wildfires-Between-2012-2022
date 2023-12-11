@@ -20,6 +20,11 @@
 ## Applied Libraries
 ### The primary library we used to make this interactive map possible was mapbox gl js, the JavaScript library that we used all quarter in order to make our maps interactive and customizable using our own code. In the process of cleaning our data and filtering it down to the specific entries that we need, we utilized the following python libraries: pandas, geopandas, shapely, and datetime. We primarily used the functions inside geopandas to work with our newly created geodataframe that contained all the information we needed, however there were some functions within pandas that were helpful in aggregating data within our geodataframe. Also, shapely was used to turn each county feature as a multipoint geometry, that way each wildfire instance is grouped with the county that it was located in. We also used datetime to convert the default date column from the original dataset to a cleaner format that would make it easier for us to select by date.
 
+## Acknowledgements
+### Below are some individuals and organizations that we'd like to acknowledge:
+#### Professor Bo Zhao for instructing this course and facilitating the learning of the concepts that were used in this project and providing material on these concepts.
+#### Our TA, Liz Peng for reviewing and giving feedback on the lab assignments where we learned the core concepts of this course and being available to answer coding-related questions.
+
 ## Wildfire data set we could use 
 https://data-wadnr.opendata.arcgis.com/datasets/wadnr::dnr-fire-statistics-2008-present/explore?location=47.249274%2C-120.769400%2C7.97
 - Properties of dataset:
