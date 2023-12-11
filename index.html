@@ -135,6 +135,43 @@
         </div>
         <script>
             mapboxgl.accessToken = 'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
+            // Function to precompute aggregated data
+            function computeAggregatedData(wildfireFeatures) {
+                const aggregatedData = {};
+
+                wildfireFeatures.forEach(fire => {
+                    const countyName = fire.properties.COUNTY_LABEL_NM;
+
+                    // Initialize if not present
+                    if (!aggregatedData[countyName]) {
+                        aggregatedData[countyName] = {
+                            incidents: 0,
+                            acresBurned: 0,
+                            fireCauses: {}
+                        };
+                    }
+
+                    // Update aggregated data
+                    aggregatedData[countyName].incidents += 1;
+                    aggregatedData[countyName].acresBurned += fire.properties.ACRES_BURNED;
+
+                    const cause = fire.properties.FIRESCAUSE_LABEL_NM;
+                    if (cause) {
+                        aggregatedData[countyName].fireCauses[cause] = (aggregatedData[countyName].fireCauses[cause] || 0) + 1;
+                    }
+                });
+
+                // Sort causes by occurrence in descending order and extract top three causes
+                for (const countyName in aggregatedData) {
+                    const data = aggregatedData[countyName];
+                    data.topThreeReasons = Object.entries(data.fireCauses)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 3)
+                        .map(cause => cause[0]);
+                }
+
+                return aggregatedData;
+            }
             const map = new mapboxgl.Map({
                 container: 'map',
                 style: 'mapbox://styles/mapbox/outdoors-v12',
@@ -146,6 +183,28 @@
             let aggregatedData = {};
 
             async function geojsonFetch() {
+                const layers = [
+                    '0-499',
+                    '500-999',
+                    '1000-1999',
+                    '2000-9999',
+                    '10000-49999',
+                    '50000-149999',
+                    '150000-1399999',
+                    '1400000 and more'
+                ];
+                const colors = [
+                    '#FFEDA070',
+                    '#FED97670',
+                    '#FEB24C70',
+                    '#FD8D3C70',
+                    '#FC4E2A70',
+                    '#E31A1C70',
+                    '#BD002670',
+                    '#80002670'
+                ];
+                const legend = document.getElementById('legend');
+                legend.innerHTML = "<b>Acres Burned</b><br><br>";
                 let response, countyBoundaries, choroplethData, wildfireData;
                 response = await fetch('assets/WA_County_Boundaries.geojson');
                 countyBoundaries = await response.json();
@@ -180,65 +239,59 @@
                         data: choroplethData
                     });
 
-                const layers = [
-                    '0-499',
-                    '500-999',
-                    '1,000-1,999',
-                    '2,000-9,999',
-                    '10,000-49,999',
-                    '50,000-149,999',
-                    '150,000-1,399,999',
-                    '1,400,000 and more'
-                ];
-                const colors = [
-                    '#FFEDA070',
-                    '#FED97670',
-                    '#FEB24C70',
-                    '#FD8D3C70',
-                    '#FC4E2A70',
-                    '#E31A1C70',
-                    '#BD002670',
-                    '#80002670'
-                ];
-                const legend = document.getElementById('legend');
-                legend.innerHTML = "<b>Acres Burned</b><br><br>";
+                    map.addLayer({
+                        'id': 'choropleth-layer',
+                        'type': 'fill',
+                        'source': 'choroplethData',
+                        'paint': {
+                            'fill-color': [
+                                'case',
+                                ['boolean', ['feature-state', 'hover'], false],
+                                'yellow', // Change this color to your preferred hover color
+                                [
+                                    'step',
+                                    ['get', 'ACRES_BURNED'],
+                                    '#FFEDA0',
+                                    500,
+                                    '#FED976',
+                                    1000,
+                                    '#FEB24C',
+                                    2000,
+                                    '#FD8D3C',
+                                    10000,
+                                    '#FC4E2A',
+                                    50000,
+                                    '#E31A1C',
+                                    150000,
+                                    '#BD0026',
+                                    1400000,
+                                    "#800026"
+                                ]
+                            ],
+                            'fill-outline-color': [
+                                'case',
+                                ['boolean', ['feature-state', 'hover'], false],
+                                'black',
+                                '#BBBBBB'
+                            ],
+                            'fill-opacity': 0.7,
+                        },
+                        'interactive': true // Enable click events
+                    });
 
-                layers.forEach((layer, i) => {
-                    const color = colors[i];
-                    const item = document.createElement('div');
-                    const key = document.createElement('span');
-                    key.className = 'legend-key';
-                    key.style.backgroundColor = color;
+                    layers.forEach((layer, i) => {
+                        const color = colors[i];
+                        const item = document.createElement('div');
+                        const key = document.createElement('span');
+                        key.className = 'legend-key';
+                        key.style.backgroundColor = color;
 
-                    const value = document.createElement('span');
-                    value.innerHTML = `${layer}`;
-                    item.appendChild(key);
-                    item.appendChild(value);
-                    legend.appendChild(item);
-                });
-
-                    const layers = [
-                        '0-499',
-                        '500-999',
-                        '1000-1999',
-                        '2000-9999',
-                        '10000-49999',
-                        '50000-149999',
-                        '150000-1399999',
-                        '1400000 and more'
-                    ];
-                    const colors = [
-                        '#FFEDA070',
-                        '#FED97670',
-                        '#FEB24C70',
-                        '#FD8D3C70',
-                        '#FC4E2A70',
-                        '#E31A1C70',
-                        '#BD002670',
-                        '#80002670'
-                    ];
-                    const legend = document.getElementById('legend');
-                    legend.innerHTML = "<b>Acres Burned</b><br><br>";
+                        const value = document.createElement('span');
+                        value.innerHTML = `${layer}`;
+                        item.appendChild(key);
+                        item.appendChild(value);
+                        legend.appendChild(item);
+                    });
 
                     layers.forEach((layer, i) => {
                         const color = colors[i];
@@ -300,43 +353,6 @@
                 });
             }
 
-            // Function to precompute aggregated data
-            function computeAggregatedData(wildfireFeatures) {
-                const aggregatedData = {};
-
-                wildfireFeatures.forEach(fire => {
-                    const countyName = fire.properties.COUNTY_LABEL_NM;
-
-                    // Initialize if not present
-                    if (!aggregatedData[countyName]) {
-                        aggregatedData[countyName] = {
-                            incidents: 0,
-                            acresBurned: 0,
-                            fireCauses: {}
-                        };
-                    }
-
-                    // Update aggregated data
-                    aggregatedData[countyName].incidents += 1;
-                    aggregatedData[countyName].acresBurned += fire.properties.ACRES_BURNED;
-
-                    const cause = fire.properties.FIRESCAUSE_LABEL_NM;
-                    if (cause) {
-                        aggregatedData[countyName].fireCauses[cause] = (aggregatedData[countyName].fireCauses[cause] || 0) + 1;
-                    }
-                });
-
-                // Sort causes by occurrence in descending order and extract top three causes
-                for (const countyName in aggregatedData) {
-                    const data = aggregatedData[countyName];
-                    data.topThreeReasons = Object.entries(data.fireCauses)
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 3)
-                        .map(cause => cause[0]);
-                }
-
-                return aggregatedData;
-            }
 
             geojsonFetch();
 
