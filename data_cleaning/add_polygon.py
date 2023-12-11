@@ -29,21 +29,38 @@ def capitalize_county_names(county_boundaries):
     return county_boundaries
 
 def main():
-    wildfire_file_path = "assets/2012_2022_by_county.geojson"
-    county_boundaries_file_path = "assets/WA_County_Boundaries.geojson"
-    output_file_path = "assets/with_stats_bycounty.geojson"
+    for year in range(2012, 2023):
+        wildfire_file_path = f"assets/{year}_by_county.geojson"
+        county_boundaries_file_path = "assets/WA_County_Boundaries.geojson"
+        output_file_path = f"assets/with_stats_{year}_bycounty.geojson"
 
-    with open(wildfire_file_path, "r") as wildfire_file, open(county_boundaries_file_path, "r") as county_file:
-        wildfire_data = json.load(wildfire_file)
-        county_boundaries = json.load(county_file)
+        with open(wildfire_file_path, "r") as wildfire_file, open(county_boundaries_file_path, "r") as county_file:
+            wildfire_data = json.load(wildfire_file)
+            county_boundaries = json.load(county_file)
 
-        # Capitalize county names in county boundaries
-        county_boundaries = capitalize_county_names(county_boundaries)
+                # Capitalize county names in county boundaries
+            county_boundaries = capitalize_county_names(county_boundaries)
 
-        updated_data = update_geojson(wildfire_data, county_boundaries)
+            updated_data = update_geojson(wildfire_data, county_boundaries)
 
-        with open(output_file_path, "w") as output_file:
-            json.dump(updated_data, output_file, indent=2)
+            with open(output_file_path, "w") as output_file:
+                json.dump(updated_data, output_file, indent=2)
+
+    # wildfire_file_path = "assets/2012_2022_by_county.geojson"
+    # county_boundaries_file_path = "assets/WA_County_Boundaries.geojson"
+    # output_file_path = "assets/with_stats_bycounty.geojson"
+
+    # with open(wildfire_file_path, "r") as wildfire_file, open(county_boundaries_file_path, "r") as county_file:
+    #     wildfire_data = json.load(wildfire_file)
+    #     county_boundaries = json.load(county_file)
+
+    #     # Capitalize county names in county boundaries
+    #     county_boundaries = capitalize_county_names(county_boundaries)
+
+    #     updated_data = update_geojson(wildfire_data, county_boundaries)
+
+    #     with open(output_file_path, "w") as output_file:
+    #         json.dump(updated_data, output_file, indent=2)
 
 if __name__ == "__main__":
     main()
