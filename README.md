@@ -36,6 +36,7 @@ Below are some individuals and organizations that we'd like to acknowledge:
 
 - Professor Bo Zhao for instructing this course and facilitating the learning of the concepts that were used in this project and providing material on these concepts.
 - Our TA, Liz Peng for reviewing and giving feedback on the lab assignments where we learned the core concepts of this course and being available to answer coding-related questions.
+- The open source community, the creators for the libraries we used such as Mapbox GL JS, pandas, geopandas, shapely, and datetime made this project possible.
 
 ## Wildfire Data Used
 
