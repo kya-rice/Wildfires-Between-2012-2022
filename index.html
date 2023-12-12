@@ -137,6 +137,9 @@
                             <li><a class="dropdown-item" href="#">2022</a></li>
                         </ul>
                     </li>
+                    <li>
+                        <button type="button" class="btn active">Show Wildfire Locations</button>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -207,6 +210,14 @@
                     response = await fetch('assets/' + year + '_by_county.geojson');
                     Data = await response.json();
                     map.getSource('wildfireData').setData(Data);
+                }
+            }
+            function setIconVisibility(toggle) {
+                if (toggle) {
+                    map.setLayoutProperty('wildfire-layer', 'visibility', 'visible');
+                }
+                else {
+                    map.setLayoutProperty('wildfire-layer', 'visibility', 'none');
                 }
             }
             const map = new mapboxgl.Map({
@@ -397,7 +408,19 @@
                     console.log("Dropdown item clicked: ", this.text);
                     $(".dropdown-menu .dropdown-item").removeClass("active");
                     $(this).addClass("active");
-                    changeYearSelected(this.text);
+                    changeYearSelected(this.text)
+                });
+            });
+            $(document).ready(function () {
+                $(".btn").on("click", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).removeClass("active");
+                        setIconVisibility(false);
+                    }
+                    else {
+                        $(this).addClass("active");
+                        setIconVisibility(true);
+                    }
                 });
             });
         </script>
